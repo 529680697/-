@@ -3,12 +3,14 @@
 #include <windows.h>
 #include "myFunction.h"
 
-int main()
-{
+int main(){
     FILE *fp;
-    if((fp = openArticle("1.txt")) != NULL){
-        hash_node hash_list[MAX_PRIME_LESS_THAN_HASH_LEN];
+    char path[100];
+    sat_path(path);
+    if((fp = openArticle(path)) != NULL){
         double start = clock();
+        int totalTimes = 0;
+        hash_node hash_list[MAX_PRIME_LESS_THAN_HASH_LEN];
         for (int k = 0; k < MAX_PRIME_LESS_THAN_HASH_LEN; ++k) {
             hash_list[k].time = 0;
             hash_list[k].next = NULL;
@@ -26,6 +28,7 @@ int main()
                 }
                 temp_word[j] = '\0';  //temp_p即为一行文字中的一个单词
                 if (j != 0){
+                    totalTimes++;
                     unsigned int location = hash(temp_word, strlen(temp_word));  //找到该单词在hash表中的位置
                     if (put_word_to_hash_list(temp_word, hash_list, location) != 0){  //将该单词放入hash表中
                         printf("Put word to hash list error!\n");
@@ -38,10 +41,9 @@ int main()
             }
         }
         fclose(fp);
-
         double end = clock();
-        printf("Time-consuming of this document: %.2lfms!\n", end-start);
-        print_the_times_of_the_words(hash_list);  //输出各个单词的出现频率
+        output_count(hash_list, start, end, totalTimes);
+        printf("Count correctly!\n");
         system("pause");
     }
     return 0;
